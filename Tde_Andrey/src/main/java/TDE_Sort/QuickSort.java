@@ -1,22 +1,25 @@
 package TDE_Sort;
 
-import java.util.Arrays;
-
 public class QuickSort {
     private int comparisons;
     private int swaps;
     private long executionTime;
     private int[] originalArray;
     private int[] sortedArray;
-    private int tamanhoArray; // Nova variável para armazenar o tamanho do array
+    private int tamanhoArray;
 
     public void sort(int[] array) {
-        originalArray = Arrays.copyOf(array, Tamanho_Array(array)); // Usando a função Tamanho_Array
+        tamanhoArray = Tamanho_Array(array);
+        originalArray = new int[tamanhoArray];
+        Copiar_Array(array, originalArray, tamanhoArray);
+
         long startTime = System.nanoTime();
-        quickSort(array, 0, Tamanho_Array(array) - 1); // Usando a função Tamanho_Array
+        quickSort(array, 0, tamanhoArray - 1);
         long endTime = System.nanoTime();
         executionTime = endTime - startTime;
-        sortedArray = Arrays.copyOf(array, Tamanho_Array(array)); // Usando a função Tamanho_Array
+
+        sortedArray = new int[tamanhoArray];
+        Copiar_Array(array, sortedArray, tamanhoArray);
     }
 
     private int Tamanho_Array(int[] array) {
@@ -55,7 +58,6 @@ public class QuickSort {
         array[i + 1] = array[high];
         array[high] = temp;
         swaps++;
-
         return i + 1;
     }
 
@@ -77,5 +79,11 @@ public class QuickSort {
 
     public int[] getSortedArray() {
         return sortedArray;
+    }
+
+    private void Copiar_Array(int[] source, int[] destination, int size) {
+        for (int i = 0; i < size; i++) {
+            destination[i] = source[i];
+        }
     }
 }

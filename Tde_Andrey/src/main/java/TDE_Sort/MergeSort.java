@@ -1,22 +1,25 @@
 package TDE_Sort;
 
-import java.util.Arrays;
-
 public class MergeSort {
     private int comparisons;
     private int swaps;
     private long executionTime;
     private int[] originalArray;
     private int[] sortedArray;
-    private int tamanhoArray; // Nova variável para armazenar o tamanho do array
+    private int tamanhoArray;
 
     public void sort(int[] array) {
-        originalArray = Arrays.copyOf(array, Tamanho_Array(array)); // Usando a função Tamanho_Array
+        tamanhoArray = Tamanho_Array(array);
+        originalArray = new int[tamanhoArray];
+        Copiar_Array(array, originalArray, tamanhoArray);
+
         long startTime = System.nanoTime();
-        mergeSort(array);
+        mergeSort(array, 0, tamanhoArray - 1);
         long endTime = System.nanoTime();
         executionTime = endTime - startTime;
-        sortedArray = Arrays.copyOf(array, Tamanho_Array(array)); // Usando a função Tamanho_Array
+
+        sortedArray = new int[tamanhoArray];
+        Copiar_Array(array, sortedArray, tamanhoArray);
     }
 
     private int Tamanho_Array(int[] array) {
@@ -27,60 +30,53 @@ public class MergeSort {
         return tamanho;
     }
 
-    private void mergeSort(int[] array) {
-        int n = array.length;
-        if (n < 2) {
-            return;
+    private void mergeSort(int[] array, int low, int high) {
+        if (low < high) {
+            int mid = low + (high - low) / 2;
+            mergeSort(array, low, mid);
+            mergeSort(array, mid + 1, high);
+            merge(array, low, mid, high);
         }
-
-        int mid = n / 2;
-        int[] left = new int[mid];
-        int[] right = new int[n - mid];
-
-        for (int i = 0; i < mid; i++) {
-            left[i] = array[i];
-        }
-        for (int i = mid; i < n; i++) {
-            right[i - mid] = array[i];
-        }
-
-        mergeSort(left);
-        mergeSort(right);
-
-        merge(array, left, right);
     }
 
-    private void merge(int[] array, int[] left, int[] right) {
-    int nL = left.length;
-    int nR = right.length;
-    int i = 0, j = 0, k = 0;
+    private void merge(int[] array, int low, int mid, int high) {
+        int n1 = mid - low + 1;
+        int n2 = high - mid;
 
-    while (i < nL && j < nR) {
-        if (left[i] <= right[j]) {
+        int[] left = new int[n1];
+        int[] right = new int[n2];
+
+        Copiar_Array(array, left, n1, low);
+        Copiar_Array(array, right, n2, mid + 1);
+
+        int i = 0, j = 0, k = low;
+
+        while (i < n1 && j < n2) {
+            comparisons++;
+            if (left[i] <= right[j]) {
+                array[k] = left[i];
+                i++;
+            } else {
+                array[k] = right[j];
+                j++;
+                swaps++;
+            }
+            k++;
+        }
+
+        while (i < n1) {
             array[k] = left[i];
             i++;
-        } else {
+            k++;
+        }
+
+        while (j < n2) {
             array[k] = right[j];
             j++;
+            k++;
+            swaps++;
         }
-        k++;
-        comparisons++;
     }
-
-    while (i < nL) {
-        array[k] = left[i];
-        i++;
-        k++;
-        swaps++; // Incrementa swaps ao fazer a troca
-    }
-
-    while (j < nR) {
-        array[k] = right[j];
-        j++;
-        k++;
-        swaps++; // Incrementa swaps ao fazer a troca
-    }
-}
 
     public int getComparisons() {
         return comparisons;
@@ -100,5 +96,17 @@ public class MergeSort {
 
     public int[] getSortedArray() {
         return sortedArray;
+    }
+
+    private void Copiar_Array(int[] source, int[] destination, int size) {
+        for (int i = 0; i < size; i++) {
+            destination[i] = source[i];
+        }
+    }
+
+    private void Copiar_Array(int[] source, int[] destination, int size, int start) {
+        for (int i = 0; i < size; i++) {
+            destination[i] = source[start + i];
+        }
     }
 }
